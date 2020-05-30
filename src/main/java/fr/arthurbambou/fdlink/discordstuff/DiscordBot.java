@@ -2,10 +2,10 @@ package fr.arthurbambou.fdlink.discordstuff;
 
 import com.vdurmont.emoji.EmojiParser;
 import fr.arthurbambou.fdlink.FDLink;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.packet.ChatMessageS2CPacket;
+import net.minecraft.entity.player.Player;
+import net.minecraft.entity.player.ServerPlayer;
+import net.minecraft.packet.play.SendChatMessageC2S;
 import net.minecraft.server.MinecraftServer;
-import net.minecraft.server.network.ServerPlayerEntity;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.javacord.api.DiscordApi;
@@ -92,22 +92,23 @@ public class DiscordBot {
         this.api.addMessageCreateListener(new MessageCreateListener() {
             @Override
             public void onMessageCreate(MessageCreateEvent event) {
+                if (event.getMessageAuthor().isBotUser()) return;
                  MinecraftServer server = FDLink.SERVER;
 //                this.ticks++;
                 if (server != null) {
-                    if (server.playerManager != null) {
-                        int playerNumber = server.playerManager.players.size();
-                        int maxPlayer = server.playerManager.getMaxPlayerCount();
+                    if (server.field_2842 != null) {
+                        int playerNumber = server.field_2842.field_578.size();
+//                        int maxPlayer = server.field_2842;
                         if (event.getMessageContent().startsWith("!playerlist")) {
                             StringBuilder playerlist = new StringBuilder();
-                            for (Object playerEntity : server.playerManager.players.toArray(new ServerPlayerEntity[playerNumber])) {
-                                playerlist.append(((PlayerEntity) playerEntity).name).append("\n");
+                            for (Object playerEntity : server.field_2842.field_578.toArray(new ServerPlayer[playerNumber])) {
+                                playerlist.append(((Player) playerEntity).name).append("\n");
                             }
                             if (playerlist.toString().endsWith("\n")) {
                                 int a = playerlist.lastIndexOf("\n");
                                 playerlist = new StringBuilder(playerlist.substring(0, a));
                             }
-                            event.getChannel().sendMessage("Players : " + playerNumber + "/" + maxPlayer + "\n\n" + playerlist);
+                            event.getChannel().sendMessage("Players : " + playerNumber + "/?" + /*maxPlayer +*/ "\n\n" + playerlist);
                         }
                         FDLink.getDiscordBot().lastMessageD = FDLink.getDiscordBot().config.discordToMinecraft
                                 .replace("%player", event.getMessageAuthor().getDisplayName());
@@ -133,8 +134,8 @@ public class DiscordBot {
 //                     } else {
                         FDLink.getDiscordBot().lastMessageD = FDLink.getDiscordBot().lastMessageD.replace("%message", string_message);
 //                     }
-                        server.playerManager.sendToAll(new ChatMessageS2CPacket(FDLink.getDiscordBot().lastMessageD));
-                        server.sendMessage(FDLink.getDiscordBot().lastMessageD);
+                        server.field_2842.method_559(new SendChatMessageC2S(FDLink.getDiscordBot().lastMessageD));
+                        server.sendFeedback(FDLink.getDiscordBot().lastMessageD);
                         if (FDLink.getDiscordBot().hasChatChannels && FDLink.getDiscordBot().config.minecraftToDiscord.booleans.customChannelDescription && FDLink.getDiscordBot().ticks >= 200) {
                             //                     FBLink.getDiscordBot().ticks = 0;
                             //                     int totalUptimeSeconds = (int) (Util.getMeasuringTimeMs() - this.startTime) / 1000;

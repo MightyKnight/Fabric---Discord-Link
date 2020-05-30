@@ -3,7 +3,7 @@
   "package": "fr.arthurbambou.fdlink.mixin",
   "compatibilityLevel": "JAVA_8",
   "mixins": [
-    "MixinChatMessageS2CPacket",
+    "MixinSendChatMessageC2S",
     "MixinMinecraftServer"
   ],
   "injectors": {

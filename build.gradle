@@ -56,12 +56,12 @@ dependencies {
 
 	//to change the versions see the gradle.properties file
     minecraft "com.mojang:minecraft:${project.minecraft_version}"
-    mappings files("MCPYarn-1.2.5-2.jar")
+    mappings files("plasma-b1.7.3+build.8.jar")
 
 	modImplementation "com.github.minecraft-cursed-legacy:cursed-fabric-loader:${project.loader_version}"
 
 	// Fabric API. This is technically optional, but you probably want it anyway.
-	// modCompile "net.fabricmc.fabric-api:fabric-api:${project.fabric_version}"
+	modCompile "com.github.minecraft-cursed-legacy:Cursed-Legacy-API:${project.api_version}"
 
 	modCompile "org.javacord:javacord-api:${project.javacord_version}"
     modCompile "org.javacord:javacord-core:${project.javacord_version}"
