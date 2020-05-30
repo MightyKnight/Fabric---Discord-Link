@@ -1,7 +1,21 @@
-plugins {
-    id 'maven-publish'
-    id 'fabric-loom' version "0.2.7-SNAPSHOT"
+buildscript {
+    repositories {
+		jcenter()
+        maven {
+            name = "Fabric"
+            url = "https://maven.fabricmc.net/"
+        }
+		maven { 
+			name = "Jitpack"
+			url 'https://jitpack.io/'
+		}
+	}
+	dependencies {
+        classpath 'com.github.Chocohead:Fabric-Loom:97d30fb'
+	}
 }
+
+apply plugin: "fabric-loom"
 
 sourceCompatibility = JavaVersion.VERSION_1_8
 targetCompatibility = JavaVersion.VERSION_1_8
@@ -14,38 +28,37 @@ repositories {
     mavenCentral()
     mavenLocal()
     jcenter()
-    maven {
-        name = 'Fabric'
-        url = 'http://maven.modmuss50.me/'
-    }
-    maven {
-        name = 'SpongePowered'
-        url = 'http://repo.spongepowered.org/maven'
-    }
-    maven {
-        name = 'mojang'
-        url = 'https://libraries.minecraft.net/'
-    }
-    maven {
-        name = 'legacy-fabric'
-        url = 'https://dl.bintray.com/legacy-fabric/Legacy-Fabric-Maven'
-    }
+    maven { 
+		name = "Jitpack"
+		url "https://jitpack.io/"
+	}
 }
 
 minecraft {
-    intermediaryUrl = {
-        return "https://dl.bintray.com/legacy-fabric/Legacy-Fabric-Maven/net/fabricmc/intermediary/" + it + "/intermediary-" + it + "-v2.jar";
-    }
 }
 
 dependencies {
+    // fabric loader requires log4j, guava, and gson
+    implementation group: 'org.apache.logging.log4j', name: 'log4j-api', version: '2.8.1'
+    implementation group: 'org.apache.logging.log4j', name: 'log4j-core', version: '2.8.1'
+    implementation 'com.google.guava:guava:28.0-jre'
+    implementation group: 'com.google.code.gson', name: 'gson', version: '2.8.6'
+
+    // mixin and fabric loader need asm 8
+    implementation 'org.ow2.asm:asm:8.0'
+    implementation 'org.ow2.asm:asm-analysis:8.0'
+    implementation 'org.ow2.asm:asm-commons:8.0'
+    implementation 'org.ow2.asm:asm-tree:8.0'
+    implementation 'org.ow2.asm:asm-util:8.0'
+
+
+
+
 	//to change the versions see the gradle.properties file
-	compile "com.google.guava:guava:23.5-jre"
     minecraft "com.mojang:minecraft:${project.minecraft_version}"
-    mappings "net.fabricmc:yarn:${project.yarn_mappings}:v2"
-    modCompile ("net.fabricmc:fabric-loader-1.8.9:${project.loader_version}") {
-        exclude module: "guava"
-    }
+    mappings files("MCPYarn-1.2.5-2.jar")
+
+	modImplementation "com.github.minecraft-cursed-legacy:cursed-fabric-loader:${project.loader_version}"
 
 	// Fabric API. This is technically optional, but you probably want it anyway.
 	// modCompile "net.fabricmc.fabric-api:fabric-api:${project.fabric_version}"
@@ -53,6 +66,7 @@ dependencies {
 	modCompile "org.javacord:javacord-api:${project.javacord_version}"
     modCompile "org.javacord:javacord-core:${project.javacord_version}"
 	modCompile "com.vdurmont:emoji-java:5.1.1"
+    modCompile 'com.google.code.gson:gson:2.8.6'
 
 	include "org.javacord:javacord-api:${project.javacord_version}"
     include "org.javacord:javacord-core:${project.javacord_version}"
@@ -67,6 +81,7 @@ dependencies {
 	include "org.apache.logging.log4j:log4j-api:2.11.0"
 
 	include "com.vdurmont:emoji-java:5.1.1"
+    include 'com.google.code.gson:gson:2.8.6'
 }
 
 processResources {
@@ -99,25 +114,4 @@ task sourcesJar(type: Jar, dependsOn: classes) {
 
 jar {
     from "LICENSE"
-}
-
-// configure the maven publication
-publishing {
-    publications {
-        mavenJava(MavenPublication) {
-            // add all the jars that should be included when publishing to maven
-            artifact(remapJar) {
-                builtBy remapJar
-            }
-            artifact(sourcesJar) {
-                builtBy remapSourcesJar
-            }
-        }
-    }
-
-    // select the repositories you want to publish to
-    repositories {
-        // uncomment to publish to the local maven
-        // mavenLocal()
-    }
 }

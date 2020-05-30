@@ -5,6 +5,7 @@ import com.google.gson.GsonBuilder;
 import fr.arthurbambou.fdlink.discordstuff.DiscordBot;
 import net.fabricmc.api.DedicatedServerModInitializer;
 import net.fabricmc.loader.api.FabricLoader;
+import net.minecraft.server.MinecraftServer;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -20,6 +21,8 @@ public class FDLink implements DedicatedServerModInitializer {
 	private static ConfigManager configManager;
 	private static DiscordBot discordBot;
 	public static Logger LOGGER = LogManager.getLogger("FBlink");
+
+	public static MinecraftServer SERVER;
 
 	@Override
 	public void onInitializeServer() {

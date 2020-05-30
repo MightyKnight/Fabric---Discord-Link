@@ -16,9 +16,6 @@
       "fr.arthurbambou.fdlink.FDLink"
     ]
   },
-  "depends": {
-    "fabricloader": ">=0.7.0"
-  },
   "mixins": [
     "fdlink.mixin.json"
   ]
